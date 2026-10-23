@@ -1,0 +1,366 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light theme variables */
+    --body-bg: #f8fafc;
+    --body-text: #0f172a;
+    --card-bg: #ffffff;
+    --muted: #64748b;
+    --border: rgba(15, 23, 42, 0.06);
+    --glass-bg: rgba(255, 255, 255, 0.82);
+    --surface-subtle: #f8fafc;
+    --surface-raised: #f1f5f9;
+    --notification-bg: #ffffff;
+    --notification-header-bg: #eff6ff;
+    --notification-hover-bg: #f8fafc;
+    --notification-unread-bg: #eff6ff;
+    --notification-divider: rgba(15, 23, 42, 0.08);
+    color-scheme: light;
+    background-color: var(--body-bg);
+    color: var(--body-text);
+  }
+
+  .dark {
+    /* Dark theme variables */
+    --body-bg: #0f172a;
+    --body-text: #e2e8f0;
+    --card-bg: rgba(15, 23, 42, 0.85);
+    --muted: #94a3b8;
+    --border: rgba(148, 163, 184, 0.12);
+    --glass-bg: rgba(15, 23, 42, 0.75);
+    --surface-subtle: #1e293b;
+    --surface-raised: #334155;
+    --notification-bg: #111c31;
+    --notification-header-bg: #17243b;
+    --notification-hover-bg: #1e293b;
+    --notification-unread-bg: #17243b;
+    --notification-divider: rgba(148, 163, 184, 0.16);
+    color-scheme: dark;
+    background-color: var(--body-bg);
+    color: var(--body-text);
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--body-bg);
+    color: var(--body-text);
+  }
+}
+
+@layer utilities {
+  .glass {
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    background: var(--glass-bg);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .glass-dark {
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Dark-mode specific tweaks that reference CSS variables */
+  .dark .glass {
+    background: var(--glass-bg);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .dark .glass-soft {
+    background: var(--card-bg);
+    border-color: var(--border);
+  }
+
+  .dark .input-soft {
+    background: var(--surface-subtle);
+    border-color: var(--border);
+    color: var(--body-text);
+  }
+
+  /* Map common light utilities to theme variables when in dark mode.
+     This avoids editing every component but keeps a consistent look. */
+  .dark [class*="bg-white"] {
+    background-color: var(--card-bg) !important;
+  }
+
+  .dark [class~="bg-slate-50"],
+  .dark [class~="bg-slate-100"],
+  .dark [class*="bg-slate-50/"],
+  .dark [class*="bg-slate-100/"] {
+    background-color: var(--surface-subtle) !important;
+  }
+
+  .dark [class~="bg-slate-200"],
+  .dark [class*="bg-slate-200/"] {
+    background-color: var(--surface-raised) !important;
+  }
+
+  .dark [class~="text-slate-400"],
+  .dark [class~="text-slate-500"],
+  .dark [class~="text-slate-600"] {
+    color: var(--muted) !important;
+  }
+
+  .dark [class~="text-slate-700"],
+  .dark [class~="text-slate-800"],
+  .dark [class~="text-slate-900"] {
+    color: var(--body-text) !important;
+  }
+
+  .dark [class*="border-slate-"],
+  .dark .border-white,
+  .dark .border-white\/80 {
+    border-color: var(--border) !important;
+  }
+
+  .dark .shadow-xl,
+  .dark .shadow-lg,
+  .dark .shadow-md,
+  .dark .shadow-sm {
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18) !important;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-emerald {
+    background: linear-gradient(135deg, #059669 0%, #0d9488 50%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .card-hover {
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .card-hover:hover {
+    transform: translateY(-6px) scale(1.015);
+    box-shadow: 0 20px 35px -10px rgba(79, 70, 229, 0.18);
+  }
+
+  .glass-soft {
+    -webkit-backdrop-filter: blur(22px);
+    backdrop-filter: blur(22px);
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    box-shadow: 0 35px 80px rgba(15, 23, 42, 0.08);
+  }
+
+  .input-soft {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    box-shadow: inset 0 1px 1px rgba(15, 23, 42, 0.04);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    box-shadow: 0 18px 35px rgba(79, 70, 229, 0.2);
+  }
+
+  .btn-secondary {
+    background: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
+    color: white;
+    box-shadow: 0 18px 35px rgba(6, 182, 212, 0.18);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.09);
+  }
+
+  /* Toast styles */
+  .toast-container {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.5rem;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .toast {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: 0.65rem;
+    min-width: 220px;
+    max-width: 420px;
+    --toast-accent: #2563eb;
+    --toast-tint: #eff6ff;
+    background: #ffffff;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-left: 4px solid var(--toast-accent);
+    box-shadow: 0 14px 38px rgba(15, 23, 42, 0.16);
+    color: #0f172a;
+    font-weight: 600;
+  }
+
+  .dark .toast {
+    background: var(--card-bg);
+    border-color: rgba(148, 163, 184, 0.18);
+    border-left-color: var(--toast-accent);
+    box-shadow: 0 16px 42px rgba(2, 6, 23, 0.42);
+    color: #e2e8f0;
+  }
+
+  .toast .toast-icon {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 0.5rem;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    color: var(--toast-accent);
+    background: var(--toast-tint);
+  }
+
+  .toast .toast-body {
+    flex: 1 1 auto;
+  }
+
+  .toast .toast-close {
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0.25rem;
+    opacity: 0.9;
+  }
+
+  @media (max-width: 640px) {
+    .toast-container {
+      right: 1rem;
+      left: 1rem;
+      bottom: 1rem;
+    }
+
+    .toast {
+      min-width: 0;
+      max-width: none;
+    }
+  }
+
+
+  .expense-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .expense-item:hover {
+    transform: translateX(6px);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.06) 0%, rgba(147, 51, 234, 0.06) 100%);
+  }
+}
+
+.toast--success { --toast-accent: #059669; --toast-tint: #d1fae5; }
+.toast--error { --toast-accent: #dc2626; --toast-tint: #fee2e2; }
+.toast--warning { --toast-accent: #d97706; --toast-tint: #fef3c7; }
+.toast--info { --toast-accent: #2563eb; --toast-tint: #dbeafe; }
+
+.dark .toast--success { --toast-tint: rgba(5, 150, 105, 0.2); }
+.dark .toast--error { --toast-tint: rgba(220, 38, 38, 0.2); }
+.dark .toast--warning { --toast-tint: rgba(217, 119, 6, 0.2); }
+.dark .toast--info { --toast-tint: rgba(37, 99, 235, 0.22); }
+
+.notification-panel {
+  background-color: var(--notification-bg);
+  border-color: var(--notification-divider);
+}
+
+.dark .notification-panel {
+  background: var(--notification-bg);
+  border-color: var(--notification-divider);
+}
+
+.notification-panel__header {
+  background-color: var(--notification-header-bg);
+  border-color: var(--notification-divider);
+}
+
+.notification-panel__item {
+  border-bottom: 1px solid var(--notification-divider);
+}
+
+.notification-panel__item:last-child {
+  border-bottom: 0;
+}
+
+.notification-panel__item:hover {
+  background-color: var(--notification-hover-bg);
+}
+
+.notification-panel__item--unread {
+  background-color: var(--notification-unread-bg);
+}
+
+/* Keyframe Animations */
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+  animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.bounce-in {
+  animation: bounceIn 0.65s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.6); }
+  50% { opacity: 1; transform: scale(1.04); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(1.5deg); }
+}
+
+.pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); }
+  50% { box-shadow: 0 0 35px rgba(99, 102, 241, 0.45); }
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.4);
+  border-radius: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.7);
+}
