@@ -1,5 +1,9 @@
 # 💳 KharchaKart - Expense Management System
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-KharchaKart_on_Render-00c7b7?style=for-the-badge&logo=render&logoColor=white)](https://kharchakart.onrender.com)
+&nbsp;
+[![Live URL](https://img.shields.io/badge/Website-kharchakart.onrender.com-blue?style=for-the-badge)](https://kharchakart.onrender.com)
+
 KharchaKart is a full-stack MERN enterprise expense tracking and approval system featuring role-based workflows, multi-currency claims, digital receipts, analytics, and persistent dark/light themes.
 
 ## ✨ Key Features
@@ -57,4 +61,5 @@ npm run dev
 | `npm start` | Run backend server in production mode |
 
 ## ☁️ Deployment
-Deploy to [Render](https://render.com) using the included [`render.yaml`](./render.yaml) blueprint. Set `MONGODB_URI` in Render environment settings, and the service builds and runs automatically.
+- **Live App**: [https://kharchakart.onrender.com](https://kharchakart.onrender.com)
+- **Blueprint**: Deployed on [Render](https://render.com) using [`render.yaml`](./render.yaml). Set `MONGODB_URI` and `JWT_SECRET` in environment variables.
