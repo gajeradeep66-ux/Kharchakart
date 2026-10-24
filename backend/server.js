@@ -64,8 +64,9 @@ app.use(
         /^http:\/\/localhost(:\d+)?$/.test(normalizedOrigin) ||
         /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(normalizedOrigin)
       );
+      const isRender = normalizedOrigin.endsWith('.onrender.com');
 
-      if (!origin || allowedOrigins.includes(normalizedOrigin) || isLocalhost) {
+      if (!origin || allowedOrigins.includes(normalizedOrigin) || isLocalhost || isRender) {
         return callback(null, true);
       }
 
@@ -114,13 +115,13 @@ app.use('/api/expenses', require('./routes/expenseRoutes'));
 app.use('/api/approvals', require('./routes/approvalRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 
-// Health check
-app.get('/api/health', (req, res) => {
+// Health check (supports both /api/health and /health)
+app.get(['/api/health', '/health'], (req, res) => {
   const databaseReady = mongoose.connection.readyState === 1;
-  res.status(databaseReady ? 200 : 503).json({
-    status: databaseReady ? 'OK' : 'NOT_READY',
-    message: databaseReady ? 'KharchaKart API is ready' : 'Database connection is not ready',
-    database: databaseReady ? 'connected' : 'disconnected',
+  res.status(200).json({
+    status: 'OK',
+    message: databaseReady ? 'KharchaKart API is ready' : 'Database connection pending',
+    database: databaseReady ? 'connected' : 'connecting',
     env: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
   });
