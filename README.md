@@ -15,12 +15,12 @@ KharchaKart is a full-stack MERN enterprise expense tracking and approval system
 - **Dark & Light Mode**: Complete theme persistence across all screens and accounts.
 
 ## 👥 Demo Accounts
-| Role | Portal URL | Email | Password | Access Level |
-| :--- | :--- | :--- | :--- | :--- |
-| **Owner** | `/login/admin` | `owner@kharchakart.com` | `Owner123!` | System settings, user roles, payment confirmation |
-| **Finance** | `/login/finance` | `finance@kharchakart.com` | `Finance123!` | Step 2 audit, tax/invoice verification, CSV export |
-| **Manager** | `/login/manager` | `manager@kharchakart.com` | `Manager123!` | Step 1 review, team claims verification |
-| **Employee** | `/login` | `employee@kharchakart.com` | `Employee123!` | Submit claims, attach receipts, track status |
+| Role | Portal URL | Email | Access Level |
+| :--- | :--- | :--- | :--- |
+| **Owner** | `/login/admin` | `owner@kharchakart.com` | System settings, user roles, payment confirmation |
+| **Finance** | `/login/finance` | `finance@kharchakart.com` | Step 2 audit, tax/invoice verification, CSV export |
+| **Manager** | `/login/manager` | `manager@kharchakart.com` | Step 1 review, team claims verification |
+| **Employee** | `/login` | `employee@kharchakart.com` | Submit claims, attach receipts, track status |
 
 ## 🔄 3-Step Approval Workflow
 1. **Submit**: Employee submits expense claim with category, amount, currency, and receipt.
