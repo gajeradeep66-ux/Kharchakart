@@ -1,0 +1,27 @@
+name: Keep KharchaKart Alive on Render
+
+on:
+  schedule:
+    # Runs every 10 minutes (Render free tier spins down after 15 minutes of inactivity)
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger from the GitHub Actions tab
+
+jobs:
+  ping-render:
+    name: Ping KharchaKart Health
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Ping Live Server Endpoint
+        run: |
+          echo "Pinging KharchaKart live on Render..."
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://kharchakart.onrender.com/health || echo "FAILED")
+          echo "Render HTTP Status: $STATUS_CODE"
+          
+          if [ "$STATUS_CODE" = "200" ]; then
+            echo "✅ KharchaKart is warm and running!"
+          else
+            echo "⚠️ Health check returned $STATUS_CODE. Retrying with full output..."
+            curl -m 60 https://kharchakart.onrender.com/health || true
+          fi

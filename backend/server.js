@@ -6,6 +6,8 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const path = require('path');
+const https = require('https');
+const http = require('http');
 const connectDB = require('./config/db');
 
 dotenv.config();
@@ -153,14 +155,44 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Keep-alive self-ping on Render (prevents 15-minute idle spin-down in free tier)
+let keepAliveTimer = null;
+const initKeepAlive = () => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const forceEnable = process.env.ENABLE_KEEP_ALIVE === 'true';
+  if (!isProduction && !forceEnable) return;
+
+  const baseUrl = (process.env.RENDER_EXTERNAL_URL || process.env.PING_URL || 'https://kharchakart.onrender.com').replace(/\/$/, '');
+  const targetUrl = `${baseUrl}/health`;
+  const INTERVAL_MS = 10 * 60 * 1000; // 10 minutes (Render spins down at 15 minutes)
+
+  console.log(`⏱️ Keep-alive scheduled: auto-pinging ${targetUrl} every 10 minutes`);
+
+  keepAliveTimer = setInterval(() => {
+    const client = targetUrl.startsWith('https') ? https : http;
+    client
+      .get(targetUrl, (res) => {
+        console.log(`[Keep-Alive] Self-ping to ${targetUrl} - HTTP ${res.statusCode}`);
+      })
+      .on('error', (err) => {
+        console.warn(`[Keep-Alive] Ping warning: ${err.message}`);
+      });
+  }, INTERVAL_MS);
+};
+
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
   console.log(`✅ Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  initKeepAlive();
 });
 
 // Graceful shutdown
 const shutdown = (signal) => {
   console.log(`\n${signal} received. Shutting down gracefully...`);
+  if (keepAliveTimer) {
+    clearInterval(keepAliveTimer);
+    keepAliveTimer = null;
+  }
   server.close(() => {
     console.log('HTTP server closed.');
     process.exit(0);
