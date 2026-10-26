@@ -79,6 +79,19 @@ app.use(
   })
 );
 
+// Health check endpoint — placed early to respond instantly to Render/load-balancer probes
+// Bypasses body parsers and API rate limiters so deploy probes never time out or get blocked
+app.get(['/health', '/api/health'], (req, res) => {
+  const databaseReady = mongoose.connection.readyState === 1;
+  res.status(200).json({
+    status: 'OK',
+    message: databaseReady ? 'KharchaKart API is ready' : 'Database connection pending',
+    database: databaseReady ? 'connected' : 'connecting',
+    env: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Request logging
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
@@ -98,10 +111,12 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// Stricter limiter for auth routes — 10 req / 15 min
+// Auth limiter — 50 attempts / 15 min (protects against brute-force while preventing false lockouts during testing)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 50,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: { error: 'Too many login attempts, please try again later.' },
 });
 app.use('/api/auth/login', authLimiter);
@@ -116,18 +131,6 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/expenses', require('./routes/expenseRoutes'));
 app.use('/api/approvals', require('./routes/approvalRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
-
-// Health check (supports both /api/health and /health)
-app.get(['/api/health', '/health'], (req, res) => {
-  const databaseReady = mongoose.connection.readyState === 1;
-  res.status(200).json({
-    status: 'OK',
-    message: databaseReady ? 'KharchaKart API is ready' : 'Database connection pending',
-    database: databaseReady ? 'connected' : 'connecting',
-    env: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString(),
-  });
-});
 
 if (process.env.NODE_ENV === 'production') {
   const frontendBuildPath = path.join(__dirname, '../frontend/dist');
@@ -150,9 +153,9 @@ app.use((req, res) => {
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err.stack);
-  res.status(err.status || 500).json({
-    error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : err.message,
-  });
+  const status = err.status || err.statusCode || 500;
+  const message = status < 500 ? err.message : (process.env.NODE_ENV === 'production' ? 'Internal Server Error' : err.message);
+  res.status(status).json({ error: message });
 });
 
 // Keep-alive self-ping on Render (prevents 15-minute idle spin-down in free tier)
@@ -170,13 +173,15 @@ const initKeepAlive = () => {
 
   keepAliveTimer = setInterval(() => {
     const client = targetUrl.startsWith('https') ? https : http;
-    client
+    const req = client
       .get(targetUrl, (res) => {
+        res.resume(); // consume response stream to prevent socket memory leak
         console.log(`[Keep-Alive] Self-ping to ${targetUrl} - HTTP ${res.statusCode}`);
       })
       .on('error', (err) => {
         console.warn(`[Keep-Alive] Ping warning: ${err.message}`);
       });
+    req.setTimeout(15000, () => req.destroy());
   }, INTERVAL_MS);
 };
 

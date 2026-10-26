@@ -2,6 +2,9 @@
   "name": "kharchakart-backend",
   "version": "1.0.0",
   "description": "Node.js + Express + MongoDB backend for KharchaKart Expense Management",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
